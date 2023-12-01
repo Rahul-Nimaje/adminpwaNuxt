@@ -1,0 +1,64 @@
+.center-container {
+  display: flex;
+  margin-top: 100px;
+  justify-content: center;
+  height: 50vh;
+  /* Optional: Set a specific height for centering within the viewport */
+}
+
+.registration-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+.content-forgatepassword {
+  display: flex;
+  justify-content: space-between;
+  max-width: 300px;
+  margin: 0 auto;
+  margin-top: 10px;
+  /* background: #A0C5E8; */
+  padding: 5px 0;
+}
+.forgotpassword {
+  margin-top: 20px;
+  text-align: center;
+  text-decoration: underline;
+  display: block;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+.navbar-header{
+  background-color: rgb(115, 85, 197)
+}
+.sidebarCss{
+}
+.backgroundImage{
+  background-image: url('@/assets/images/websitebgImage.jpg');
+  margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover; /* Adjusts the size of the background image to cover the entire container */
+    background-position: center; /* Centers the background image */
+    font-family: Arial, sans-serif; /* Optional: Choose a font for your text */
+    color: #ffffff; /* Optional: Set text color */
+}
+@media only screen and (max-width: 600px) {
+  /* nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    nav a {
+      margin-top: 5px;
+    } */
+}
