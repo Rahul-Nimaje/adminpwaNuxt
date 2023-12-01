@@ -43,6 +43,7 @@
         :rowsPerPageOptions="[5,10,25]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         responsiveLayout="scroll"
+        :key="updateUserKey"
       >
         <template #header>
           <div class="table-header flex flex-column md:flex-row md:justify-content-between">
@@ -90,70 +91,35 @@
       :modal="true"
       class="p-fluid"
     >
-      <userForm @hideDialog="hideDialog" @saveUser="saveUser" :user="user" />
+      <userForm @hideDialog="hideDialog" @saveUser="saveUser" :userAction="action" :user="user" />
     </Dialog>
 
     <Dialog
-      :visible.sync="deleteProductDialog"
+      :visible.sync="deleteUserDialog"
       :styles="{width: '450px'}"
       header="Confirm"
       :modal="true"
     >
-      <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-        <span v-if="user">
-          Are you sure you want to delete
-          <b>{{user.fullName}}</b>?
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="deleteProductDialog = false"
-        />
-        <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteProduct" />
-      </template>
-    </Dialog>
-
-    <Dialog
-      :visible.sync="deleteProductsDialog"
-      :styles="{width: '450px'}"
-      header="Confirm"
-      :modal="true"
-    >
-      <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-        <span v-if="user">Are you sure you want to delete the selected products?</span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="deleteProductsDialog = false"
-        />
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          class="p-button-text"
-          @click="deleteSelectedProducts"
-        />
-      </template>
+      <confirmationDialog
+        :message="`Are you sure you want to delete ${user.fullName}`"
+        @confirmAction="deleteUser"
+        @closeAction="deleteUserDialog=false"
+      />
     </Dialog>
   </div>
 </template>
 <script>
 // import user from ''
 import userForm from "@/components/userForm.vue";
+import confirmationDialog from "./confirmationDialog.vue";
+import _ from "lodash";
 export default {
-  components: { userForm },
+  components: { userForm, confirmationDialog },
   data() {
     return {
       userList: [],
       userDialog: false,
-      deleteProductDialog: false,
+      deleteUserDialog: false,
       deleteProductsDialog: false,
       user: {},
       selectedProducts: null,
@@ -161,11 +127,14 @@ export default {
       submitted: false,
       selectedStatus: "Active",
       status: ["Active", "InActive"],
+      oldUserData: {},
       statuses: [
         { label: "INSTOCK", value: "instock" },
         { label: "LOWSTOCK", value: "lowstock" },
         { label: "OUTOFSTOCK", value: "outofstock" }
-      ]
+      ],
+      updateUserKey: 0,
+      action: "update"
     };
   },
   //   productService: null,
@@ -190,66 +159,71 @@ export default {
       this.user = {};
       this.submitted = false;
       this.userDialog = true;
+      this.action = "add";
     },
     hideDialog() {
       this.userDialog = false;
       this.submitted = false;
     },
-    saveUser() {
-      console.log("test", this.submitted);
-      this.submitted = true;
-
-      //   if (this.user.first_name.trim()) {
-      //     if (this.product.id) {
-      //       this.product.inventoryStatus = this.product.inventoryStatus.value
-      //         ? this.product.inventoryStatus.value
-      //         : this.product.inventoryStatus;
-      //       this.products[this.findIndexById(this.product.id)] = this.product;
-      //       this.$toast.add({
-      //         severity: "success",
-      //         summary: "Successful",
-      //         detail: "Product Updated",
-      //         life: 3000
-      //       });
-      //     } else {
-      //       this.product.id = this.createId();
-      //       this.product.code = this.createId();
-      //       this.product.image = "product-placeholder.svg";
-      //       this.product.inventoryStatus = this.product.inventoryStatus
-      //         ? this.product.inventoryStatus.value
-      //         : "INSTOCK";
-      //       this.products.push(this.product);
-      //       this.$toast.add({
-      //         severity: "success",
-      //         summary: "Successful",
-      //         detail: "Product Created",
-      //         life: 3000
-      //       });
-      //     }
-
-      //     this.userDialog = false;
-      //     this.product = {};
-      //   }
+    async saveUser(user, actions) {
+      console.log("action", actions);
+      actions == "add"
+        ? await this.addUserData(user)
+        : await this.editUserData(user);
+    },
+    async addUserData(user) {
+      const userSaved = await this.addUser(user);
+      if (userSaved) {
+        this.userDialog = false;
+      }
+    },
+    async editUserData() {
+      if (_.isEqual(user, this.oldUserData)) {
+        this.setToast("error", "Changes", "No Changes Found");
+        return true;
+      }
+      const userUpdated = await this.updateUser(user, {
+        severity: "success",
+        subject: "User Update",
+        details: "User Updates Successfully"
+      });
+      if (userUpdated) {
+        await this.updateUserList(userUpdated);
+        this.userDialog = false;
+      }
+    },
+    async updateUserList(user) {
+      let userUpdate = await this.userList.find(obj => obj.id === user.id);
+      for (let key in user) {
+        Object.keys(userUpdate).includes(key)
+          ? (userUpdate[key] = user[key])
+          : null;
+      }
+      this.updateUserKey++;
     },
     editProduct(user) {
       console.log("productttttttttttttt", user);
-      this.user = { ...user };
+
+      this.user = { ...this.oldUserData } = user;
       this.userDialog = true;
     },
-    confirmDeleteProduct(product) {
-      this.product = product;
-      this.deleteProductDialog = true;
+    confirmDeleteProduct(user) {
+      console.log("user.......", user);
+      this.user = user;
+      this.deleteUserDialog = true;
     },
-    deleteProduct() {
-      this.user = this.user.filter(val => val.id !== this.user.id);
-      this.deleteProductDialog = false;
-      this.product = {};
-      this.$toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Deleted",
-        life: 3000
-      });
+    async deleteUser() {
+      console.log("usersssssssssssdelete", this.user);
+      let users = [];
+      users.push(this.user);
+      const deletedUser = await this.deleteUsers(users);
+      if (deletedUser) {
+        this.userList = this.userList.filter(obj => {
+          return !users.some(user => user.id === obj.id);
+        });
+        this.deleteUserDialog = false;
+      }
+      this.user = {};
     },
     findIndexById(id) {
       let index = -1;
@@ -275,6 +249,7 @@ export default {
       this.$refs.dt.exportCSV();
     },
     confirmDeleteSelected() {
+      console.log("delete products");
       this.deleteProductsDialog = true;
     },
     deleteSelectedProducts() {

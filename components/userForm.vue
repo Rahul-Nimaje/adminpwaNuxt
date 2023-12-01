@@ -7,9 +7,9 @@
         v-model.trim="user.first_name"
         required="true"
         autofocus
-        :class="{'p-invalid': submitted && !user.first_name}"
+        :class="{'p-invalid':  !user.first_name}"
       />
-      <small class="p-invalid" v-if="submitted && !user.first_name">First Name is required.</small>
+      <small class="error-message p-invalid" v-if=" !user.first_name">First Name is required.</small>
     </div>
     <div class="field">
       <label for="LastName">Last Name</label>
@@ -22,9 +22,9 @@
         v-model.trim="user.emailid"
         required="true"
         autofocus
-        :class="{'p-invalid': submitted && !user.emailid}"
+        :class="{'p-invalid':  !user.emailid}"
       />
-      <small class="p-invalid" v-if="submitted && !user.emailid">Email is required.</small>
+      <small class="error-message p-invalid" v-if=" !user.emailid">Email is required.</small>
     </div>
     <div class="field">
       <label for="Mobile">Mobile Number</label>
@@ -33,30 +33,30 @@
         v-model.trim="user.mobile"
         required="true"
         autofocus
-        :class="{'p-invalid': submitted && !user.mobile}"
+        :class="{'p-invalid':  !user.mobile}"
       />
-      <small class="p-invalid" v-if="submitted && !user.mobile">Mobile is required.</small>
+      <small class="error-message p-invalid" v-if=" !user.mobile">Mobile is required.</small>
     </div>
     <div class="field">
       <label for="Status">Status</label>
       <Dropdown v-model="selectedStatus" :options="status" />
     </div>
     <div class="field">
-      <label for="PassWord">PassWord</label>
-      <InputText
+      <label for="PassWord">Password</label>
+      <Password
         id="PassWord"
         v-model.trim="user.password"
         required="true"
         autofocus
-        :class="{'p-invalid': submitted && !user.password}"
+        :class="{'p-invalid':  !user.password}"
       />
-      <small class="p-invalid" v-if="submitted && !user.password">Password is required.</small>
+      <small class="error-message p-invalid" v-if="!user.password">Password is required.</small>
     </div>
     <div class="grid justify-content-end">
-      <div class="col-3">
+      <div class="col-4">
         <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
       </div>
-      <div class="col-3">
+      <div class="col-4">
         <Button
           label="Save"
           icon="pi pi-check"
@@ -73,11 +73,11 @@ export default {
   props: {
     user: {
       type: Object
-    }
+    },
+    userAction: String
   },
   data() {
     return {
-      submitted: false,
       selectedStatus: "Active",
       status: ["Active", "InActive"]
     };
@@ -90,7 +90,7 @@ export default {
       this.$emit("hideDialog");
     },
     saveUser() {
-      this.$emit("saveUser");
+      this.$emit("saveUser", this.user, this.userAction);
     }
   }
 };

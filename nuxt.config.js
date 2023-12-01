@@ -27,6 +27,7 @@ export default {
     'primeicons/primeicons.css',
     "primeflex/primeflex.css",
     '@/assets/css/main.css',
+    '@/assets/css/error.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
