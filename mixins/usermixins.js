@@ -54,6 +54,19 @@ export default {
             }
             return userData
         },
+        async bulkCreateUser(bulkUser) {
+            let bulkCreatdUser = null
+            try {
+                bulkCreatdUser = await catalog.post('/users/bulkcreate', bulkUser);
+                if (bulkCreatdUser) {
+                    this.setToast('success', 'User Create', 'Users Created Successfully')
+                }
+            } catch (err) {
+                this.setToast('error', 'User Create', err)
+                throw new Error(err)
+            }
+            return bulkCreatdUser;
+        },
         async deleteUsers(values) {
             console.log("values.........", values);
             try {

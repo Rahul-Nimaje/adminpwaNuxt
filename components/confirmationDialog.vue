@@ -13,7 +13,11 @@
   <script>
 export default {
   props: {
-    message: String
+    message: String,
+    deleteAll:{
+      type:Boolean,
+      default:false
+    }
   },
   data() {
     return {};

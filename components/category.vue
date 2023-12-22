@@ -4,51 +4,26 @@
       <Toolbar class="mb-4">
         <template #start>
           <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-          <Button
-            label="Delete"
-            icon="pi pi-trash"
-            class="p-button-danger"
-            @click="confirmDeleteSelected"
-            :disabled="!selectedUser || !selectedUser.length"
-          />
+          <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected"
+            :disabled="!selectedUser || !selectedUser.length" />
         </template>
 
         <template #end>
-          <input
-            class="pa-4"
-            type="file"
-            ref="file"
-            style="display: none"
-            v-on:change="FileUpload($event)"
-          />
+          <input class="pa-4" type="file" ref="file" style="display: none" v-on:change="FileUpload($event)" />
 
           <Button v-bind="$attrs" v-on="$listeners" label="Import" @click="$refs.file.click()"></Button>
-          <Button
-            label="Export"
-            icon="pi pi-upload"
-            class="p-button-help mx-2"
-            @click="exportCSV($event)"
-          />
+          <Button label="Export" icon="pi pi-upload" class="p-button-help mx-2" @click="exportCSV($event)" />
         </template>
       </Toolbar>
 
-      <DataTable
-        ref="dt"
-        :value="userList"
-        :selection.sync="selectedUser"
-        data-key="id"
-        :paginator="true"
-        :rows="10"
+      <DataTable ref="dt" :value="categoryList" :selection.sync="selectedUser" data-key="id" :paginator="true" :rows="10"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5,10,25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Users"
-        responsiveLayout="scroll"
-        :key="updateUserKey"
-      >
+        :rowsPerPageOptions="[5, 10, 25]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Users"
+        responsiveLayout="scroll" :key="updateUserKey">
         <template #header>
           <div class="table-header flex flex-column md:flex-row md:justify-content-between">
-            <h5 class="mb-2 md:m-0 md:align-self-center">Manage Users</h5>
+            <h5 class="mb-2 md:m-0 md:align-self-center">Manage Category</h5>
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -56,57 +31,33 @@
           </div>
         </template>
 
-        <Column selectionMode="multiple" :styless="{width: '3rem'}" :exportable="false"></Column>
-        <Column field="id" header="Employee Id" :sortable="true" :styles="{'min-width':'12rem'}"></Column>
-        <Column field="fullName" header="Name" :sortable="true" :styles="{'min-width':'16rem'}"></Column>
-        <Column field="mobile" header="Mobile" :sortable="true" :styles="{'min-width':'8rem'}"></Column>
-        <Column field="emailid" header="Email" :sortable="true" :styles="{'min-width':'10rem'}"></Column>
-        <Column field="status" header="Status" :sortable="true" :styles="{'min-width':'10rem'}"></Column>
-        <Column
-          field="createdAt"
-          header="createdAt"
-          :sortable="true"
-          :styles="{'min-width':'10rem'}"
-        ></Column>
-        <Column :exportable="false" :styles="{'min-width':'8rem'}">
+        <Column selectionMode="multiple" :styless="{ width: '3rem' }" :exportable="false"></Column>
+        <Column field="id" header="Employee Id" :sortable="true" :styles="{ 'min-width': '12rem' }"></Column>
+        <Column field="category_name" header="category_name" :sortable="true" :styles="{ 'min-width': '16rem' }"></Column>
+        <Column field="category_type" header="category_type" :sortable="true" :styles="{ 'min-width': '8rem' }"></Column>
+        <Column field="parent_id" header="parent_id" :sortable="true" :styles="{ 'min-width': '10rem' }"></Column>
+        <Column field="status" header="Status" :sortable="true" :styles="{ 'min-width': '10rem' }"></Column>
+        <Column field="createdAt" header="createdAt" :sortable="true" :styles="{ 'min-width': '10rem' }"></Column>
+        <Column :exportable="false" :styles="{ 'min-width': '8rem' }">
           <template #body="slotProps">
-            <Button
-              icon="pi pi-pencil"
-              class="p-button-rounded p-button-success mr-2"
-              @click="editUser(slotProps.data)"
-            />
-            <Button
-              icon="pi pi-trash"
-              class="p-button-rounded p-button-warning"
-              @click="confirmDeleteUser(slotProps.data)"
-            />
+            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+              @click="editUser(slotProps.data)" />
+            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning"
+              @click="confirmDeleteUser(slotProps.data)" />
           </template>
         </Column>
       </DataTable>
     </div>
 
-    <Dialog
-      :visible.sync="userDialog"
-      :style="{width: '450px'}"
-      header="User Details"
-      :modal="true"
-      class="p-fluid"
-    >
-      <userForm @hideDialog="hideDialog" @saveUser="saveUser" :userAction="action" :user="user" />
+    <Dialog :visible.sync="userDialog" :style="{ width: '600px' }" header="Category" :modal="true" class="p-fluid">
+      <Card flat class="flat-card"> <template #content>
+          <Categoryform @hideDialog="hideDialog" @saveCategory="saveCategory" :userAction="action" :user="user" />
+        </template></Card>
     </Dialog>
 
-    <Dialog
-      :visible.sync="deleteUserDialog"
-      :styles="{width: '450px'}"
-      header="Confirm"
-      :modal="true"
-    >
-      <confirmationDialog
-        :message="message"
-        :deleteAll="deleteAll"
-        @confirmAction="deleteUser"
-        @closeAction="deleteUserDialog=false"
-      />
+    <Dialog :visible.sync="deleteUserDialog" :styles="{ width: '450px' }" header="Confirm" :modal="true">
+      <confirmationDialog :message="message" :deleteAll="deleteAll" @confirmAction="deleteUser"
+        @closeAction="deleteUserDialog = false" />
     </Dialog>
   </div>
 </template>
@@ -115,11 +66,12 @@
 import userForm from "@/components/userForm.vue";
 import confirmationDialog from "./confirmationDialog.vue";
 import _ from "lodash";
+import Categoryform from "./categoryform.vue";
 export default {
-  components: { userForm, confirmationDialog },
+  components: { userForm, confirmationDialog, Categoryform },
   data() {
     return {
-      userList: [],
+      categoryList: [],
       userDialog: false,
       deleteUserDialog: false,
       user: {},
@@ -140,15 +92,13 @@ export default {
       action: "update"
     };
   },
-  created() {
+  async created() {
     this.initFilters();
-  },
-  async mounted() {
-    await this.fetchUser();
+    await this.fetchCategory()
   },
   methods: {
-    async fetchUser() {
-      this.userList = await this.getUserList();
+    async fetchCategory() {
+      this.categoryList = await this.getcategoryList();
     },
     FileUpload(e) {
       var file = e.target.files[0];
@@ -161,9 +111,9 @@ export default {
       console.log("file.........", file, results);
       let importData = results?.data || [];
       importData.pop();
-      const userCreatedData=await this.bulkCreateUser([...importData]);
-      if(userCreatedData){
-      await  this.fetchUser();
+      const userCreatedData = await this.bulkCreateUser([...importData]);
+      if (userCreatedData) {
+        await this.fetchUser();
       }
     },
     openNew() {
@@ -176,17 +126,17 @@ export default {
       this.userDialog = false;
       this.submitted = false;
     },
-    async saveUser(user, actions) {
-      console.log("action", actions);
-      actions == "add"
-        ? await this.addUserData(user)
-        : await this.editUserData(user);
+    async saveCategory(category) {
+      console.log("action",category);
+      this.action == "add"
+        ? await this.addCategoryData(category)
+        : await this.editUserData(category);
     },
-    async addUserData(user) {
-      const userSaved = await this.addUser(user);
-      if (userSaved) {
+    async addCategoryData(category) {
+      const categorySaved = await this.addCategories(category);
+      if (categorySaved) {
         this.userDialog = false;
-        await this.fetchUser();
+        await this.fetchCategory();
       }
     },
     async editUserData(user) {
@@ -216,6 +166,7 @@ export default {
     editUser(user) {
       this.user = { ...this.oldUserData } = user;
       this.userDialog = true;
+      this.action = 'update'
     },
     confirmDeleteUser(user) {
       this.user = user;
@@ -254,3 +205,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+.flat-card {
+  box-shadow: none;
+  border: 0px solid #ddd;
+  /* Add a border for a separation effect */
+}
+</style>

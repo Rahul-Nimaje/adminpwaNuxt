@@ -11,6 +11,7 @@
       </Button>
       <Dialog :visible.sync="openDialog" :containerStyle="{width: '60%'}">
         <ConfirmDialog
+          :message="`Are you sure you want to Log Out!`"
           @confirmAction="()=>{
           $store.commit('logoutUser');
           openDialog=false

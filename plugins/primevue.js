@@ -20,6 +20,9 @@ import Toolbar from "primevue/toolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Dropdown from 'primevue/dropdown';
+import VuePapaParse from 'vue-papa-parse';
+import Checkbox from 'primevue/checkbox';
+Vue.use(VuePapaParse)
 Vue.use(PrimeVue);
 Vue.component('Button', Button);
 Vue.component('Card', Card);
@@ -40,4 +43,5 @@ Vue.component('Toolbar', Toolbar);
 Vue.component('DataTable', DataTable);
 Vue.component('Column', Column);
 Vue.component('Dropdown', Dropdown);
+Vue.component('Checkbox', Checkbox);
 Vue.use(ToastService);

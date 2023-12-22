@@ -20,6 +20,10 @@ export default {
                 {
                     label:"Users",
                     to:"/alluser"
+                },
+                {
+                    label:"Category",
+                    to:"/category"
                 }
             ]
         }

@@ -71,7 +71,13 @@ export default {
         name: 'alluser',
         path: '/alluser',
         component: resolve(__dirname, 'pages/userPage.vue')
+      },
+      {
+        name: 'category',
+        path: '/category',
+        component: resolve(__dirname, 'pages/category_view.vue')
       }
+
       )
     }
   }
