@@ -5,7 +5,7 @@
       <InputText
         id="FristName"
         v-model.trim="user.first_name"
-        required="true"
+        required
         autofocus
         :class="{'p-invalid':  !user.first_name}"
       />
@@ -20,7 +20,7 @@
       <InputText
         id="emailid"
         v-model.trim="user.emailid"
-        required="true"
+        required
         autofocus
         :class="{'p-invalid':  !user.emailid}"
       />
@@ -31,7 +31,7 @@
       <InputText
         id="Mobile"
         v-model.trim="user.mobile"
-        required="true"
+        required
         autofocus
         :class="{'p-invalid':  !user.mobile}"
       />
@@ -46,7 +46,7 @@
       <Password
         id="PassWord"
         v-model.trim="user.password"
-        required="true"
+        required
         autofocus
         :class="{'p-invalid':  !user.password}"
       />

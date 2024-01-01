@@ -26,7 +26,7 @@
       </div>
       <div class="field mt-2" v-if="category_type">
         <label for="Status">Categories</label>
-        <Dropdown v-model="selectCategory" :options="categories" />
+        <Dropdown v-model="selectCategory" :options="categoryList" optionLabel="category_name" />
       </div>
       <div class="mt-4 field">
         <Button label="Add" @click="addCategory"></Button>
@@ -41,17 +41,32 @@
 <script>
 import catalog from "@/services/catalog";
 export default {
+  props: {
+    categoryList: Array,
+    category: Object
+  },
   data() {
     return {
       category_name: null,
       selectedStatus: "Active",
       status: ["Active", "InActive"],
       category_type: false,
-      categories: ["Grocery", "Beauty"],
-      selectCategory: "Grocery",
+      selectCategory: null,
       uploadedImage: null,
       imageShow: false
     };
+  },
+  created() {
+    this.selectCategory = this.categoryList.length > 0 ? this.categoryList[0] : null;
+    if (this.category) {
+      const { category_name, status, category_type, image, rootCategories } = this.category;
+      this.category_name = category_name;
+      this.category_type = category_type == 'sub';
+      this.selectedStatus = status;
+      this.uploadedImage = image
+      this.selectCategory = this.categoryList.find(category => category.id == rootCategories.id)
+    }
+    console.log("selectCategory", this.selectCategory)
   },
   methods: {
     async FileUpload(e) {
@@ -59,7 +74,6 @@ export default {
       const formData = new FormData();
       formData.append("file", file);
       this.uploadedImage = await catalog.post("/upload/image", formData);
-      console.log("getimagePath", this.uploadedImage);
     },
     clickedDownload() {
       const link = document.createElement('a');
@@ -69,14 +83,17 @@ export default {
       link.click();
     },
     addCategory() {
-     let categoryData={
-      category_name:this.category_name,
-      status:this.selectedStatus,
-      category_type:this.category_type?'sub':'root',
-      image:this.uploadedImage,
-     }
-     console.log("categoryData..............",categoryData)
-     this.$emit('saveCategory',categoryData)
+      let categoryData = {
+        category_name: this.category_name,
+        status: this.selectedStatus,
+        category_type: this.category_type ? 'sub' : 'root',
+        image: this.uploadedImage,
+        parent_id: this.selectCategory ? this.selectCategory.id : null
+      }
+      if (this.category) {
+        categoryData.id = this.category.id
+      }
+      this.$emit('saveCategory', categoryData)
     },
   }
 };
